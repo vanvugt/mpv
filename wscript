@@ -316,7 +316,7 @@ iconv support use --disable-iconv.",
         'desc': 'zlib',
         'func': check_libs(['z'],
                     check_statement('zlib.h', 'inflate(0, Z_NO_FLUSH)')),
-        'req': True,
+        #'req': True,
         'fmsg': 'Unable to find development files for zlib.'
     } , {
         'name' : '--encoding',

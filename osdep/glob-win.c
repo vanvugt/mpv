@@ -18,6 +18,7 @@
 #include <windows.h>
 #include <stdbool.h>
 #include <string.h>
+#include <io.h>
 #include "osdep/io.h"
 #include "mpv_talloc.h"
 
@@ -87,13 +88,13 @@ int mp_glob(const char *restrict pattern, int flags,
     }
 
     wchar_t *wpattern = mp_from_utf8(NULL, pattern);
-    WIN32_FIND_DATAW data;
-    HANDLE find = FindFirstFileW(wpattern, &data);
+    struct _wfinddata_t data;
+    intptr_t find = _wfindnext(wpattern, &data);
     talloc_free(wpattern);
 
     // Assume an error means there were no matches. mpv doesn't check for
     // glob() errors, so this should be fine for now.
-    if (find == INVALID_HANDLE_VALUE) {
+    if (find == -1) {
         pglob->gl_pathc = 0;
         return GLOB_NOMATCH;
     }
@@ -106,13 +107,13 @@ int mp_glob(const char *restrict pattern, int flags,
     // the full path, since all files are relative to the directory specified
     // in the pattern.
     do {
-        if (!wcscmp(data.cFileName, L".") || !wcscmp(data.cFileName, L".."))
+        if (!wcscmp(data.name, L".") || !wcscmp(data.name, L".."))
             continue;
 
-        wchar_t *wname = talloc_wcsdup(tmp, data.cFileName);
+        wchar_t *wname = talloc_wcsdup(tmp, data.name);
         MP_TARRAY_APPEND(tmp, wnamev, pathc, wname);
-    } while (FindNextFileW(find, &data));
-    FindClose(find);
+    } while (_wfindnext(find, &data) == 0);
+    _findclose(find);
 
     if (!wnamev) {
         talloc_free(tmp);

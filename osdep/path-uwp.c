@@ -22,7 +22,7 @@
 #include "options/path.h"
 
 #if HAVE_UWP
-//WINBASEAPI DWORD WINAPI GetCurrentDirectoryW(DWORD nBufferLength, LPWSTR lpBuffer);
+WINBASEAPI DWORD WINAPI GetCurrentDirectoryW(DWORD nBufferLength, LPWSTR lpBuffer);
 #endif
 
 const char *mp_get_platform_path_uwp(void *talloc_ctx, const char *type)
