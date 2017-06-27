@@ -22,13 +22,21 @@ Dependency identifiers (for win32 vs. Unix):
                             (Windows without Cygwin)
     os-win32 / _WIN32:      defined if basic windows.h API is available
     win32 / HAVE_WIN32:     defined if desktop windows.h API is available
+    uwp / HAVE_UWP:         define if building for UWP (basic Windows only)
 """
 
 build_options = [
     {
+        'name': '--uwp',
+        'desc': 'UWP',
+        'default': 'disable',
+        'deps': [ 'os-win32' ],
+        'func': check_cc(lib=['windowsapp']),
+    }, {
         'name': '--cplayer',
         'desc': 'mpv CLI player',
         'default': 'enable',
+        'deps_neg': [ 'uwp' ],
         'func': check_true
     }, {
         'name': '--libmpv-shared',
@@ -147,6 +155,7 @@ main_dependencies = [
         'name': 'win32',
         'desc': 'win32 desktop APIs',
         'deps_any': [ 'os-win32', 'os-cygwin' ],
+        'deps_neg': [ 'uwp' ],
         'func': check_cc(lib=['winmm', 'gdi32', 'ole32', 'uuid', 'avrt', 'dwmapi']),
     }, {
         'name': '--win32-internal-pthreads',
