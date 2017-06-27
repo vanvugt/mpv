@@ -528,7 +528,7 @@ audio_output_features = [
     }, {
         'name': '--wasapi',
         'desc': 'WASAPI audio output',
-        'deps': ['win32'],
+        'deps': [ 'win32', 'uwp' ],
         'func': check_cc(fragment=load_fragment('wasapi.c')),
     }
 ]
